@@ -18,6 +18,7 @@
     .card:hover { transform:scale(1.02); }
     .card img { width:100%; }
     .card h3 { margin:10px; font-size:18px; }
+    .card p { padding:0 10px; font-size:14px; color:#333; }
     .card a { display:block; background:#008CBA; color:#fff; padding:10px; text-decoration:none; font-size:16px; }
     .card a:hover { background:#005f73; }
     footer { font-size:14px; }
@@ -28,8 +29,7 @@
     }
     #post-form { display:none; max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     #post-form input, #post-form textarea { width:100%; margin:5px 0; padding:8px; }
-    #post-form button { padding:10px 15px; background:#008CBA; color:#fff; border:none; cursor:pointer; }
-    #post-form button:hover { background:#005f73; }
+    #login-area, #user-info { text-align:center; margin:10px; }
   </style>
 </head>
 <body>
@@ -44,21 +44,20 @@
     <a href="#">新着</a>
   </nav>
 
-  <!-- 🔑 ログインエリア -->
-  <div id="login-area" style="text-align:center; margin:20px;">
+  <!-- 🔑 ログインフォーム -->
+  <div id="login-area">
     <input type="email" id="email" placeholder="メールアドレス">
     <input type="password" id="password" placeholder="パスワード">
-    <button id="login">ログイン</button>
-    <button id="signup">新規登録</button>
+    <button id="login">ログイン / 新規登録</button>
   </div>
 
-  <!-- 👤 ログイン後の情報 -->
-  <div id="user-info" style="display:none; text-align:center; margin:20px;">
+  <!-- 🔑 ログイン後の表示 -->
+  <div id="user-info" style="display:none;">
     <p id="user-email"></p>
     <button id="logout">ログアウト</button>
   </div>
 
-  <!-- 📝 投稿フォーム -->
+  <!-- ✍ 投稿フォーム -->
   <div id="post-form">
     <h2>記事を投稿</h2>
     <input type="text" id="post-title" placeholder="タイトル">
@@ -67,16 +66,14 @@
     <button id="submit-post">投稿する</button>
   </div>
 
-  <!-- 📰 記事一覧 -->
-  <main id="articles">
-    <p style="text-align:center;">記事を読み込み中...</p>
-  </main>
+  <!-- 記事一覧 -->
+  <main id="articles"></main>
 
   <footer>
     <p>© 2025 My Gallery Site</p>
   </footer>
 
-  <!-- Firebase SDK -->
+  <!-- 🔥 Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
@@ -92,15 +89,86 @@
       appId: "1:80960762733:web:646203b4566931d711e064"
     };
 
-    // Firebase初期化
-    const app = firebase.initializeApp(firebaseConfig);
+    // 初期化
+    firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
     const loginArea = document.getElementById("login-area");
-    const userInfo = document
+    const userInfo = document.getElementById("user-info");
+    const userEmail = document.getElementById("user-email");
+    const postForm = document.getElementById("post-form");
+    const articles = document.getElementById("articles");
 
+    // 🔑 ログイン/新規登録
+    document.getElementById("login").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(() => auth.createUserWithEmailAndPassword(email, password))
+        .catch(err => alert("ログイン失敗: " + err.message));
+    });
 
+    // 🔑 ログアウト
+    document.getElementById("logout").addEventListener("click", () => {
+      auth.signOut();
+    });
+
+    // 🔑 状態監視
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginArea.style.display = "none";
+        userInfo.style.display = "block";
+        userEmail.textContent = user.email + " でログイン中";
+        postForm.style.display = "block";
+      } else {
+        loginArea.style.display = "block";
+        userInfo.style.display = "none";
+        postForm.style.display = "none";
+      }
+    });
+
+    // ✍ 記事投稿
+    document.getElementById("submit-post").addEventListener("click", () => {
+      const title = document.getElementById("post-title").value;
+      const content = document.getElementById("post-content").value;
+      const imageUrl = document.getElementById("post-image").value || "https://picsum.photos/400/250";
+
+      if (!title || !content) {
+        alert("タイトルと本文は必須です");
+        return;
+      }
+
+      db.collection("articles").add({
+        title,
+        content,
+        imageUrl,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        document.getElementById("post-title").value = "";
+        document.getElementById("post-content").value = "";
+        document.getElementById("post-image").value = "";
+      }).catch(err => alert("投稿失敗: " + err.message));
+    });
+
+    // 📖 リアルタイム記事読み込み
+    db.collection("articles").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+      articles.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${data.imageUrl}" alt="サムネイル">
+          <h3>${data.title}</h3>
+          <p>${data.content}</p>
+        `;
+        articles.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>
 
 
 
