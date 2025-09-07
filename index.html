@@ -14,13 +14,16 @@
       grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
       gap:20px; padding:0 10px;
     }
-    .card { background:#fff; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); overflow:hidden; text-align:center; transition:0.3s; }
+    .card { background:#fff; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); overflow:hidden; text-align:center; transition:0.3s; position:relative; }
     .card:hover { transform:scale(1.02); }
     .card img { width:100%; }
     .card h3 { margin:10px; font-size:18px; }
     .card p { padding:0 10px; font-size:14px; color:#333; }
-    .card a { display:block; background:#008CBA; color:#fff; padding:10px; text-decoration:none; font-size:16px; }
-    .card a:hover { background:#005f73; }
+    .delete-btn {
+      background:#e63946; color:#fff; border:none; padding:6px 10px; margin:10px;
+      cursor:pointer; border-radius:4px; font-size:12px;
+    }
+    .delete-btn:hover { background:#b71c1c; }
     footer { font-size:14px; }
     @media (max-width:600px) {
       nav a { display:inline-block; margin:5px; font-size:14px; }
@@ -99,6 +102,7 @@
     const userEmail = document.getElementById("user-email");
     const postForm = document.getElementById("post-form");
     const articles = document.getElementById("articles");
+    let currentUser = null;
 
     // 🔑 ログイン/新規登録
     document.getElementById("login").addEventListener("click", () => {
@@ -116,6 +120,7 @@
 
     // 🔑 状態監視
     auth.onAuthStateChanged(user => {
+      currentUser = user;
       if (user) {
         loginArea.style.display = "none";
         userInfo.style.display = "block";
@@ -130,6 +135,10 @@
 
     // ✍ 記事投稿
     document.getElementById("submit-post").addEventListener("click", () => {
+      if (!currentUser) {
+        alert("ログインしてください");
+        return;
+      }
       const title = document.getElementById("post-title").value;
       const content = document.getElementById("post-content").value;
       const imageUrl = document.getElementById("post-image").value || "https://picsum.photos/400/250";
@@ -143,6 +152,7 @@
         title,
         content,
         imageUrl,
+        uid: currentUser.uid, // 投稿者を保存
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         document.getElementById("post-title").value = "";
@@ -163,12 +173,27 @@
           <h3>${data.title}</h3>
           <p>${data.content}</p>
         `;
+
+        // 自分の記事なら削除ボタンを追加
+        if (currentUser && data.uid === currentUser.uid) {
+          const btn = document.createElement("button");
+          btn.textContent = "削除";
+          btn.className = "delete-btn";
+          btn.onclick = () => {
+            if (confirm("この記事を削除しますか？")) {
+              db.collection("articles").doc(doc.id).delete();
+            }
+          };
+          card.appendChild(btn);
+        }
+
         articles.appendChild(card);
       });
     });
   </script>
 </body>
 </html>
+
 
 
 
