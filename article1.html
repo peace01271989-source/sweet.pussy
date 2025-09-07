@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>記事タイトル1</title>
   <style>
     body { font-family:"Meiryo",sans-serif; background:#f9f9f9; margin:0; }
@@ -10,6 +11,10 @@
     img { width:100%; border-radius:8px; }
     a { display:inline-block; margin-top:20px; padding:10px; background:#008CBA; color:#fff; text-decoration:none; border-radius:5px; }
     a:hover { background:#005f73; }
+    @media (max-width:600px) {
+      header h1 { font-size:20px; }
+      main { margin:10px; padding:15px; }
+    }
   </style>
 </head>
 <body>
