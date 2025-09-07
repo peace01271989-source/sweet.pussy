@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Gallery Site</title>
   <style>
     body { font-family:"Meiryo",sans-serif; background:#f4f4f4; margin:0; }
     header, footer { background:#222; color:#fff; text-align:center; padding:20px; }
     nav { background:#444; text-align:center; padding:10px; }
     nav a { color:#fff; margin:0 10px; text-decoration:none; font-size:16px; }
-    main { max-width:1000px; margin:20px auto; padding:0 10px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px; }
+    main {
+      max-width:1000px; margin:20px auto; display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px; padding:0 10px;
+    }
     .card { background:#fff; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); overflow:hidden; text-align:center; transition:0.3s; }
     .card:hover { transform:scale(1.02); }
     .card img { width:100%; }
@@ -18,22 +21,7 @@
     .card a { display:block; background:#008CBA; color:#fff; padding:10px; text-decoration:none; font-size:16px; }
     .card a:hover { background:#005f73; }
     footer { font-size:14px; }
-
-    /* 認証/投稿UI */
-    .wrap { max-width:1000px; margin:20px auto; padding:0 10px; }
-    .panel { background:#fff; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,.08); padding:16px; }
-    .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
-    h2 { margin:0 0 12px; font-size:18px; }
-    label { display:block; font-size:14px; margin:8px 0 4px; }
-    input, textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:14px; }
-    textarea { resize:vertical; min-height:80px; }
-    .btn { display:inline-block; border:none; padding:10px 14px; border-radius:6px; cursor:pointer; font-size:14px; background:#008CBA; color:#fff; }
-    .btn--alt { background:#666; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .msg { margin-top:8px; font-size:13px; min-height:1.2em; color:#333; }
-    .hidden { display:none !important; }
-
-    @media (max-width:600px){
+    @media (max-width:600px) {
       nav a { display:inline-block; margin:5px; font-size:14px; }
       header h1 { font-size:22px; }
       .card h3 { font-size:16px; }
@@ -46,43 +34,6 @@
     <p>レスポンシブ対応レイアウト</p>
   </header>
 
-  <!-- 🔐 認証UI -->
-  <section class="wrap">
-    <div class="panel">
-      <div id="signedOutView">
-        <div class="grid2">
-          <div>
-            <h2>ログイン</h2>
-            <label for="loginEmail">メールアドレス</label>
-            <input id="loginEmail" type="email" placeholder="you@example.com" />
-            <label for="loginPassword">パスワード</label>
-            <input id="loginPassword" type="password" placeholder="8文字以上" />
-            <button id="loginBtn" class="btn">ログイン</button>
-            <div id="loginMsg" class="msg"></div>
-          </div>
-          <div>
-            <h2>新規登録</h2>
-            <label for="signupEmail">メールアドレス</label>
-            <input id="signupEmail" type="email" placeholder="you@example.com" />
-            <label for="signupPassword">パスワード</label>
-            <input id="signupPassword" type="password" placeholder="8文字以上" />
-            <button id="signupBtn" class="btn">アカウント作成</button>
-            <div id="signupMsg" class="msg"></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="signedInView" class="hidden">
-        <div class="row" style="justify-content:space-between;">
-          <div>こんにちは、<strong id="userEmail"></strong> さん</div>
-          <button id="logoutBtn" class="btn btn--alt">ログアウト</button>
-        </div>
-        <div id="stateMsg" class="msg"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 既存のギャラリー -->
   <nav>
     <a href="#">ホーム</a>
     <a href="#">人気</a>
@@ -90,67 +41,65 @@
   </nav>
 
   <main>
-    <div class="grid">
-      <div class="card">
-        <img src="https://picsum.photos/400/250?1" alt="サンプル1">
-        <h3>記事タイトル1</h3>
-        <a href="article1.html">続きを読む</a>
-      </div>
-      <div class="card">
-        <img src="https://picsum.photos/400/250?2" alt="サンプル2">
-        <h3>記事タイトル2</h3>
-        <a href="article2.html">続きを読む</a>
-      </div>
-      <div class="card">
-        <img src="https://picsum.photos/400/250?3" alt="サンプル3">
-        <h3>記事タイトル3</h3>
-        <a href="article3.html">続きを読む</a>
-      </div>
+    <div class="card">
+      <img src="https://picsum.photos/400/250?1" alt="サンプル1">
+      <h3>記事タイトル1</h3>
+      <a href="article1.html">続きを読む</a>
     </div>
-
-    <!-- ✍ 投稿フォーム（ログイン時のみ表示） -->
-    <section id="postSection" class="wrap hidden">
-      <div class="panel">
-        <h2>記事を投稿</h2>
-        <label for="postTitle">タイトル</label>
-        <input id="postTitle" type="text" placeholder="記事タイトル" />
-        <label for="postContent">本文</label>
-        <textarea id="postContent" placeholder="記事の内容を入力"></textarea>
-        <label for="postImage">画像URL（任意）</label>
-        <input id="postImage" type="text" placeholder="https://..." />
-        <div class="row">
-          <button id="postBtn" class="btn">投稿する</button>
-          <div id="postMsg" class="msg"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 🔎 投稿一覧（誰でも閲覧可） -->
-    <section class="wrap">
-      <div class="panel">
-        <h2>投稿一覧</h2>
-        <div id="posts"></div>
-      </div>
-    </section>
+    <div class="card">
+      <img src="https://picsum.photos/400/250?2" alt="サンプル2">
+      <h3>記事タイトル2</h3>
+      <a href="article2.html">続きを読む</a>
+    </div>
+    <div class="card">
+      <img src="https://picsum.photos/400/250?3" alt="サンプル3">
+      <h3>記事タイトル3</h3>
+      <a href="article3.html">続きを読む</a>
+    </div>
   </main>
+
+  <!-- ログイン/新規登録フォーム -->
+  <section id="authSection" style="max-width:400px;margin:20px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <h2>ログイン / 新規登録</h2>
+    <input type="email" id="email" placeholder="メールアドレス" style="width:100%;padding:10px;margin:5px 0;">
+    <input type="password" id="password" placeholder="パスワード" style="width:100%;padding:10px;margin:5px 0;">
+    <button id="loginBtn" style="margin:5px;padding:10px;">ログイン</button>
+    <button id="signupBtn" style="margin:5px;padding:10px;">新規登録</button>
+    <p id="userInfo"></p>
+    <button id="logoutBtn" style="display:none;margin:5px;padding:10px;">ログアウト</button>
+  </section>
+
+  <!-- 投稿フォーム（ログイン後のみ表示） -->
+  <section id="postSection" style="display:none;max-width:600px;margin:20px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <h2>記事を投稿する</h2>
+    <form id="postForm">
+      <input type="text" id="title" placeholder="タイトル" required
+        style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:4px;">
+      <textarea id="content" placeholder="本文" required
+        style="width:100%;padding:10px;height:120px;margin-bottom:10px;border:1px solid #ccc;border-radius:4px;"></textarea>
+      <button type="submit" style="padding:10px 20px;background:#008CBA;color:#fff;border:none;border-radius:4px;cursor:pointer;">
+        投稿
+      </button>
+    </form>
+  </section>
+
+  <!-- 投稿一覧 -->
+  <section id="postList" style="max-width:800px;margin:20px auto;padding:10px;">
+    <h2>投稿一覧</h2>
+    <div id="posts"></div>
+  </section>
 
   <footer>
     <p>© 2025 My Gallery Site</p>
   </footer>
 
-  <!-- Firebase v10 モジュール版 -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged,
-      createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-      getFirestore, collection, addDoc, getDocs, serverTimestamp,
-      query, orderBy
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 🔧 あなたの Firebase 設定
+    // Firebase設定
     const firebaseConfig = {
       apiKey: "AIzaSyA0ys9RVMq3cPqJ3jxJEnDwvKqQ961bZM4",
       authDomain: "sweet-7b31a.firebaseapp.com",
@@ -163,140 +112,118 @@
     // 初期化
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db   = getFirestore(app);
+    const db = getFirestore(app);
 
-    // DOM参照
-    const signedOutView = document.getElementById('signedOutView');
-    const signedInView  = document.getElementById('signedInView');
-    const userEmailSpan = document.getElementById('userEmail');
-    const stateMsg      = document.getElementById('stateMsg');
+    // DOM要素
+    const loginBtn = document.getElementById("loginBtn");
+    const signupBtn = document.getElementById("signupBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userInfo = document.getElementById("userInfo");
+    const authSection = document.getElementById("authSection");
+    const postSection = document.getElementById("postSection");
 
-    const loginEmail    = document.getElementById('loginEmail');
-    const loginPassword = document.getElementById('loginPassword');
-    const loginBtn      = document.getElementById('loginBtn');
-    const loginMsg      = document.getElementById('loginMsg');
+    // 新規登録
+    signupBtn.onclick = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("登録成功！");
+      } catch (error) {
+        alert(error.message);
+      }
+    };
 
-    const signupEmail    = document.getElementById('signupEmail');
-    const signupPassword = document.getElementById('signupPassword');
-    const signupBtn      = document.getElementById('signupBtn');
-    const signupMsg      = document.getElementById('signupMsg');
+    // ログイン
+    loginBtn.onclick = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("ログイン成功！");
+      } catch (error) {
+        alert(error.message);
+      }
+    };
 
-    const logoutBtn     = document.getElementById('logoutBtn');
+    // ログアウト
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+    };
 
-    const postSection   = document.getElementById('postSection');
-    const postTitle     = document.getElementById('postTitle');
-    const postContent   = document.getElementById('postContent');
-    const postImage     = document.getElementById('postImage');
-    const postBtn       = document.getElementById('postBtn');
-    const postMsg       = document.getElementById('postMsg');
-    const postsDiv      = document.getElementById('posts');
-
-    // 🔒 認証状態でUI切り替え
+    // 認証状態の監視
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        signedOutView.classList.add('hidden');
-        signedInView.classList.remove('hidden');
-        postSection.classList.remove('hidden');
-        userEmailSpan.textContent = user.email || '';
-        stateMsg.textContent = 'ログイン中です。';
+        userInfo.textContent = `こんにちは、${user.email}`;
+        logoutBtn.style.display = "inline-block";
+        postSection.style.display = "block";
       } else {
-        signedInView.classList.add('hidden');
-        signedOutView.classList.remove('hidden');
-        postSection.classList.add('hidden');
-        stateMsg.textContent = '';
-        loginMsg.textContent = '';
-        signupMsg.textContent = '';
+        userInfo.textContent = "";
+        logoutBtn.style.display = "none";
+        postSection.style.display = "none";
       }
+      loadPosts();
     });
 
-    // ▶ ログイン
-    loginBtn.addEventListener('click', async () => {
-      loginMsg.textContent = 'ログイン中…';
-      try {
-        await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
-        loginMsg.textContent = 'ログイン成功！';
-      } catch (e) {
-        loginMsg.textContent = 'エラー: ' + (e.message || e.code);
-      }
-    });
+    // 投稿処理
+    const form = document.getElementById("postForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
 
-    // 🆕 新規登録
-    signupBtn.addEventListener('click', async () => {
-      signupMsg.textContent = '作成中…';
       try {
-        await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
-        signupMsg.textContent = 'アカウント作成＆ログイン完了！';
-      } catch (e) {
-        signupMsg.textContent = 'エラー: ' + (e.message || e.code);
-      }
-    });
-
-    // 🚪 ログアウト
-    logoutBtn.addEventListener('click', async () => {
-      stateMsg.textContent = 'ログアウト中…';
-      try {
-        await signOut(auth);
-        stateMsg.textContent = 'ログアウトしました。';
-      } catch (e) {
-        stateMsg.textContent = 'エラー: ' + (e.message || e.code);
-      }
-    });
-
-    // ✍ 投稿（ログイン必須：Firestoreルールでも保護）
-    postBtn.addEventListener('click', async () => {
-      postMsg.textContent = '投稿中…';
-      try {
-        const user = auth.currentUser;
-        if (!user) throw new Error('ログインしてください。');
-
         await addDoc(collection(db, "posts"), {
-          title:   postTitle.value || "無題",
-          content: postContent.value || "",
-          image:   postImage.value || "",
-          author:  user.email || "",
-          authorUid: user.uid,
-          createdAt: serverTimestamp()
+          title,
+          content,
+          author: auth.currentUser.email,
+          authorUid: auth.currentUser.uid,
+          createdAt: new Date()
         });
-
-        postMsg.textContent = '投稿しました！';
-        postTitle.value = "";
-        postContent.value = "";
-        postImage.value = "";
-        await loadPosts();
-      } catch (e) {
-        postMsg.textContent = 'エラー: ' + (e.message || e.code);
+        alert("投稿しました！");
+        form.reset();
+        loadPosts();
+      } catch (error) {
+        alert("投稿に失敗しました: " + error.message);
       }
     });
 
-    // 📥 投稿一覧（誰でも閲覧可）
+    // 投稿一覧の読み込み（削除機能付き）
     async function loadPosts() {
+      const postsDiv = document.getElementById("posts");
       postsDiv.innerHTML = "";
-      const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-      const snap = await getDocs(q);
-      if (snap.empty) {
-        postsDiv.innerHTML = '<p style="color:#666;">まだ投稿はありません。</p>';
-        return;
-      }
-      snap.forEach(doc => {
-        const d = doc.data();
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.marginBottom = '16px';
-        card.innerHTML = `
-          <img src="${d.image || 'https://picsum.photos/800/400'}" alt="投稿画像">
-          <h3>${d.title || '無題'}</h3>
-          <p style="padding:0 10px 10px;color:#555;">${(d.content || '').replace(/</g,"&lt;")}</p>
-          <p style="font-size:12px;color:#777;margin:0 0 12px;">by ${d.author || '匿名'}</p>
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      querySnapshot.forEach((docSnap) => {
+        const post = docSnap.data();
+        const div = document.createElement("div");
+        div.style = "padding:10px;margin-bottom:10px;background:#f9f9f9;border-radius:4px;";
+        div.innerHTML = `
+          <h3>${post.title}</h3>
+          <p>${post.content}</p>
+          <small>投稿者: ${post.author || "匿名"}</small>
         `;
-        postsDiv.appendChild(card);
+
+        // 🔑 自分の投稿のみ削除可能
+        if (auth.currentUser && post.authorUid === auth.currentUser.uid) {
+          const btn = document.createElement("button");
+          btn.textContent = "削除";
+          btn.style = "margin-top:10px;padding:5px 10px;background:#e63946;color:#fff;border:none;border-radius:4px;cursor:pointer;";
+          btn.onclick = async () => {
+            if (confirm("本当に削除しますか？")) {
+              await deleteDoc(doc(db, "posts", docSnap.id));
+              loadPosts();
+            }
+          };
+          div.appendChild(btn);
+        }
+
+        postsDiv.appendChild(div);
       });
     }
-
-    // 初回ロード
-    loadPosts();
   </script>
 </body>
 </html>
+
 
 
 
