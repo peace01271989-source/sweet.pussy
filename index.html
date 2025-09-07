@@ -21,7 +21,6 @@
     .card a { display:block; background:#008CBA; color:#fff; padding:10px; text-decoration:none; font-size:16px; }
     .card a:hover { background:#005f73; }
     footer { font-size:14px; }
-    /* スマホ向け調整 */
     @media (max-width:600px) {
       nav a { display:inline-block; margin:5px; font-size:14px; }
       header h1 { font-size:22px; }
@@ -62,23 +61,25 @@
   <footer>
     <p>© 2025 My Gallery Site</p>
   </footer>
+
+  <!-- 🔑 Firebase SDKをCDNから読み込む -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+
+  <script>
+    // あなたのプロジェクトの設定（そのまま貼り付けてOK）
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0ys9RVMq3cPqJ3jxJEnDwvKqQ961bZM4",
+      authDomain: "sweet-7b31a.firebaseapp.com",
+      projectId: "sweet-7b31a",
+      storageBucket: "sweet-7b31a.firebasestorage.app",
+      messagingSenderId: "80960762733",
+      appId: "1:80960762733:web:646203b4566931d711e064"
+    };
+
+    // Firebase初期化
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+  </script>
 </body>
 </html>
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyA0ys9RVMq3cPqJ3jxJEnDwvKqQ961bZM4",
-  authDomain: "sweet-7b31a.firebaseapp.com",
-  projectId: "sweet-7b31a",
-  storageBucket: "sweet-7b31a.firebasestorage.app",
-  messagingSenderId: "80960762733",
-  appId: "1:80960762733:web:646203b4566931d711e064"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
