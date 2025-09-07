@@ -18,22 +18,24 @@
     .card:hover { transform:scale(1.02); }
     .card img { width:100%; }
     .card h3 { margin:10px; font-size:18px; }
-    .card p { padding:0 10px; font-size:14px; color:#333; }
+    .card a { display:block; background:#008CBA; color:#fff; padding:10px; text-decoration:none; font-size:16px; }
+    .card a:hover { background:#005f73; }
     footer { font-size:14px; }
-    #auth-area { text-align:center; margin:20px; }
-    button { margin:5px; padding:8px 15px; border:none; border-radius:4px; background:#008CBA; color:white; cursor:pointer; }
-    button:hover { background:#005f73; }
     @media (max-width:600px) {
       nav a { display:inline-block; margin:5px; font-size:14px; }
       header h1 { font-size:22px; }
       .card h3 { font-size:16px; }
     }
+    #post-form { display:none; max-width:600px; margin:20px auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    #post-form input, #post-form textarea { width:100%; margin:5px 0; padding:8px; }
+    #post-form button { padding:10px 15px; background:#008CBA; color:#fff; border:none; cursor:pointer; }
+    #post-form button:hover { background:#005f73; }
   </style>
 </head>
 <body>
   <header>
     <h1>My Gallery Site</h1>
-    <p>Firestore + 固定記事 + ログイン機能</p>
+    <p>ログインして記事を投稿できます</p>
   </header>
 
   <nav>
@@ -42,42 +44,32 @@
     <a href="#">新着</a>
   </nav>
 
-  <!-- 🔑 ログイン関連 -->
-  <div id="auth-area">
-    <div id="user-info" style="display:none;">
-      <span id="user-email"></span>
-      <button id="logout">ログアウト</button>
-    </div>
-    <div id="login-area">
-      <input type="email" id="email" placeholder="メールアドレス">
-      <input type="password" id="password" placeholder="パスワード">
-      <button id="signup">新規登録</button>
-      <button id="login">ログイン</button>
-    </div>
+  <!-- 🔑 ログインエリア -->
+  <div id="login-area" style="text-align:center; margin:20px;">
+    <input type="email" id="email" placeholder="メールアドレス">
+    <input type="password" id="password" placeholder="パスワード">
+    <button id="login">ログイン</button>
+    <button id="signup">新規登録</button>
   </div>
 
-  <main id="articles">
-    <!-- Firestoreから記事がここに追加される -->
+  <!-- 👤 ログイン後の情報 -->
+  <div id="user-info" style="display:none; text-align:center; margin:20px;">
+    <p id="user-email"></p>
+    <button id="logout">ログアウト</button>
+  </div>
 
-    <!-- 固定記事 -->
-    <div class="card">
-      <img src="https://picsum.photos/400/250?1" alt="サンプル1">
-      <h3>固定記事タイトル1</h3>
-      <p>これは固定で表示される記事です。</p>
-      <a href="article1.html">続きを読む</a>
-    </div>
-    <div class="card">
-      <img src="https://picsum.photos/400/250?2" alt="サンプル2">
-      <h3>固定記事タイトル2</h3>
-      <p>これは固定で表示される記事です。</p>
-      <a href="article2.html">続きを読む</a>
-    </div>
-    <div class="card">
-      <img src="https://picsum.photos/400/250?3" alt="サンプル3">
-      <h3>固定記事タイトル3</h3>
-      <p>これは固定で表示される記事です。</p>
-      <a href="article3.html">続きを読む</a>
-    </div>
+  <!-- 📝 投稿フォーム -->
+  <div id="post-form">
+    <h2>記事を投稿</h2>
+    <input type="text" id="post-title" placeholder="タイトル">
+    <textarea id="post-content" placeholder="本文" rows="4"></textarea>
+    <input type="text" id="post-image" placeholder="画像URL (例: https://...)">
+    <button id="submit-post">投稿する</button>
+  </div>
+
+  <!-- 📰 記事一覧 -->
+  <main id="articles">
+    <p style="text-align:center;">記事を読み込み中...</p>
   </main>
 
   <footer>
@@ -90,7 +82,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
 
   <script>
-    // Firebase 設定
+    // Firebase設定
     const firebaseConfig = {
       apiKey: "AIzaSyA0ys9RVMq3cPqJ3jxJEnDwvKqQ961bZM4",
       authDomain: "sweet-7b31a.firebaseapp.com",
@@ -100,70 +92,13 @@
       appId: "1:80960762733:web:646203b4566931d711e064"
     };
 
-    // 初期化
+    // Firebase初期化
     const app = firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // ログイン処理
     const loginArea = document.getElementById("login-area");
-    const userInfo = document.getElementById("user-info");
-    const userEmail = document.getElementById("user-email");
-
-    document.getElementById("signup").addEventListener("click", () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => alert("登録成功: " + userCredential.user.email))
-        .catch(err => alert(err.message));
-    });
-
-    document.getElementById("login").addEventListener("click", () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .catch(err => alert(err.message));
-    });
-
-    document.getElementById("logout").addEventListener("click", () => {
-      auth.signOut();
-    });
-
-    // ログイン状態の監視
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        loginArea.style.display = "none";
-        userInfo.style.display = "block";
-        userEmail.textContent = user.email + " でログイン中";
-      } else {
-        loginArea.style.display = "block";
-        userInfo.style.display = "none";
-      }
-    });
-
-    // Firestoreから記事を読み込んで表示
-    const main = document.getElementById("articles");
-    db.collection("articles").orderBy("createdAt", "desc").get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const card = `
-          <div class="card">
-            <img src="${data.imageUrl}" alt="${data.title}">
-            <h3>${data.title}</h3>
-            <p>${data.content.substring(0, 50)}...</p>
-          </div>
-        `;
-        // Firestore記事は先頭に
-        main.insertAdjacentHTML("afterbegin", card);
-      });
-    });
-  </script>
-</body>
-</html>
-
-
-
-
+    const userInfo = document
 
 
 
