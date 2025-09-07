@@ -20,6 +20,9 @@
     .card h3 { margin:10px; font-size:18px; }
     .card p { padding:0 10px; font-size:14px; color:#333; }
     footer { font-size:14px; }
+    #auth-area { text-align:center; margin:20px; }
+    button { margin:5px; padding:8px 15px; border:none; border-radius:4px; background:#008CBA; color:white; cursor:pointer; }
+    button:hover { background:#005f73; }
     @media (max-width:600px) {
       nav a { display:inline-block; margin:5px; font-size:14px; }
       header h1 { font-size:22px; }
@@ -30,7 +33,7 @@
 <body>
   <header>
     <h1>My Gallery Site</h1>
-    <p>Firestore + 固定記事のハイブリッド版</p>
+    <p>Firestore + 固定記事 + ログイン機能</p>
   </header>
 
   <nav>
@@ -39,10 +42,24 @@
     <a href="#">新着</a>
   </nav>
 
-  <main id="articles">
-    <!-- 🔹 Firestoreの記事がここに追加される -->
+  <!-- 🔑 ログイン関連 -->
+  <div id="auth-area">
+    <div id="user-info" style="display:none;">
+      <span id="user-email"></span>
+      <button id="logout">ログアウト</button>
+    </div>
+    <div id="login-area">
+      <input type="email" id="email" placeholder="メールアドレス">
+      <input type="password" id="password" placeholder="パスワード">
+      <button id="signup">新規登録</button>
+      <button id="login">ログイン</button>
+    </div>
+  </div>
 
-    <!-- 🔹 手書きの固定記事 -->
+  <main id="articles">
+    <!-- Firestoreから記事がここに追加される -->
+
+    <!-- 固定記事 -->
     <div class="card">
       <img src="https://picsum.photos/400/250?1" alt="サンプル1">
       <h3>固定記事タイトル1</h3>
@@ -69,6 +86,7 @@
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
 
   <script>
@@ -84,7 +102,44 @@
 
     // 初期化
     const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // ログイン処理
+    const loginArea = document.getElementById("login-area");
+    const userInfo = document.getElementById("user-info");
+    const userEmail = document.getElementById("user-email");
+
+    document.getElementById("signup").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => alert("登録成功: " + userCredential.user.email))
+        .catch(err => alert(err.message));
+    });
+
+    document.getElementById("login").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(err => alert(err.message));
+    });
+
+    document.getElementById("logout").addEventListener("click", () => {
+      auth.signOut();
+    });
+
+    // ログイン状態の監視
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginArea.style.display = "none";
+        userInfo.style.display = "block";
+        userEmail.textContent = user.email + " でログイン中";
+      } else {
+        loginArea.style.display = "block";
+        userInfo.style.display = "none";
+      }
+    });
 
     // Firestoreから記事を読み込んで表示
     const main = document.getElementById("articles");
@@ -98,7 +153,7 @@
             <p>${data.content.substring(0, 50)}...</p>
           </div>
         `;
-        // 🔹 Firestoreの記事は固定記事より「前」に追加
+        // Firestore記事は先頭に
         main.insertAdjacentHTML("afterbegin", card);
       });
     });
