@@ -18,8 +18,7 @@
     .card:hover { transform:scale(1.02); }
     .card img { width:100%; }
     .card h3 { margin:10px; font-size:18px; }
-    .card a { display:block; background:#008CBA; color:#fff; padding:10px; text-decoration:none; font-size:16px; }
-    .card a:hover { background:#005f73; }
+    .card p { padding:0 10px; font-size:14px; color:#333; }
     footer { font-size:14px; }
     @media (max-width:600px) {
       nav a { display:inline-block; margin:5px; font-size:14px; }
@@ -31,38 +30,61 @@
 <body>
   <header>
     <h1>My Gallery Site</h1>
-    <p>レスポンシブ対応レイアウト</p>
+    <p>Firestore連携で記事を表示するデモ</p>
   </header>
 
   <nav>
-    <a href="index.html">ホーム</a>
-    <a href="popular.html">人気</a>
-    <a href="new.html">新着</a>
+    <a href="#">ホーム</a>
+    <a href="#">人気</a>
+    <a href="#">新着</a>
   </nav>
 
   <main>
-    <div class="card">
-      <img src="images/sample1.jpg" alt="サンプル1">
-      <h3>記事タイトル1</h3>
-      <a href="article1.html">続きを読む</a>
-    </div>
-    <div class="card">
-      <img src="images/sample2.jpg" alt="サンプル2">
-      <h3>記事タイトル2</h3>
-      <a href="article2.html">続きを読む</a>
-    </div>
-    <div class="card">
-      <img src="images/sample3.jpg" alt="サンプル3">
-      <h3>記事タイトル3</h3>
-      <a href="article3.html">続きを読む</a>
-    </div>
+    <!-- Firestoreから記事がここに表示される -->
   </main>
 
   <footer>
     <p>© 2025 My Gallery Site</p>
   </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+
+  <script>
+    // Firebase 設定
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0ys9RVMq3cPqJ3jxJEnDwvKqQ961bZM4",
+      authDomain: "sweet-7b31a.firebaseapp.com",
+      projectId: "sweet-7b31a",
+      storageBucket: "sweet-7b31a.firebasestorage.app",
+      messagingSenderId: "80960762733",
+      appId: "1:80960762733:web:646203b4566931d711e064"
+    };
+
+    // 初期化
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Firestoreから記事を読み込んで表示
+    const main = document.querySelector("main");
+    db.collection("articles").orderBy("createdAt", "desc").get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const card = `
+          <div class="card">
+            <img src="${data.imageUrl}" alt="${data.title}">
+            <h3>${data.title}</h3>
+            <p>${data.content.substring(0, 50)}...</p>
+          </div>
+        `;
+        main.innerHTML += card;
+      });
+    });
+  </script>
 </body>
 </html>
+
 
 
 
