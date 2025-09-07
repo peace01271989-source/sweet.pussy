@@ -30,7 +30,7 @@
 <body>
   <header>
     <h1>My Gallery Site</h1>
-    <p>Firestore連携で記事を表示するデモ</p>
+    <p>Firestore + 固定記事のハイブリッド版</p>
   </header>
 
   <nav>
@@ -39,8 +39,28 @@
     <a href="#">新着</a>
   </nav>
 
-  <main>
-    <!-- Firestoreから記事がここに表示される -->
+  <main id="articles">
+    <!-- 🔹 Firestoreの記事がここに追加される -->
+
+    <!-- 🔹 手書きの固定記事 -->
+    <div class="card">
+      <img src="https://picsum.photos/400/250?1" alt="サンプル1">
+      <h3>固定記事タイトル1</h3>
+      <p>これは固定で表示される記事です。</p>
+      <a href="article1.html">続きを読む</a>
+    </div>
+    <div class="card">
+      <img src="https://picsum.photos/400/250?2" alt="サンプル2">
+      <h3>固定記事タイトル2</h3>
+      <p>これは固定で表示される記事です。</p>
+      <a href="article2.html">続きを読む</a>
+    </div>
+    <div class="card">
+      <img src="https://picsum.photos/400/250?3" alt="サンプル3">
+      <h3>固定記事タイトル3</h3>
+      <p>これは固定で表示される記事です。</p>
+      <a href="article3.html">続きを読む</a>
+    </div>
   </main>
 
   <footer>
@@ -67,7 +87,7 @@
     const db = firebase.firestore();
 
     // Firestoreから記事を読み込んで表示
-    const main = document.querySelector("main");
+    const main = document.getElementById("articles");
     db.collection("articles").orderBy("createdAt", "desc").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -78,12 +98,15 @@
             <p>${data.content.substring(0, 50)}...</p>
           </div>
         `;
-        main.innerHTML += card;
+        // 🔹 Firestoreの記事は固定記事より「前」に追加
+        main.insertAdjacentHTML("afterbegin", card);
       });
     });
   </script>
 </body>
 </html>
+
+
 
 
 
