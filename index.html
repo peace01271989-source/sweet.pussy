@@ -42,187 +42,28 @@
 
   <main>
     <div class="card">
-      <img src="https://picsum.photos/400/250?1" alt="サンプル1">
+      <img src="images/sample1.jpg" alt="サンプル1">
       <h3>記事タイトル1</h3>
       <a href="article1.html">続きを読む</a>
     </div>
     <div class="card">
-      <img src="https://picsum.photos/400/250?2" alt="サンプル2">
+      <img src="images/sample2.jpg" alt="サンプル2">
       <h3>記事タイトル2</h3>
       <a href="article2.html">続きを読む</a>
     </div>
     <div class="card">
-      <img src="https://picsum.photos/400/250?3" alt="サンプル3">
+      <img src="images/sample3.jpg" alt="サンプル3">
       <h3>記事タイトル3</h3>
       <a href="article3.html">続きを読む</a>
     </div>
   </main>
 
-  <!-- ログイン/新規登録フォーム -->
-  <section id="authSection" style="max-width:400px;margin:20px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-    <h2>ログイン / 新規登録</h2>
-    <input type="email" id="email" placeholder="メールアドレス" style="width:100%;padding:10px;margin:5px 0;">
-    <input type="password" id="password" placeholder="パスワード" style="width:100%;padding:10px;margin:5px 0;">
-    <button id="loginBtn" style="margin:5px;padding:10px;">ログイン</button>
-    <button id="signupBtn" style="margin:5px;padding:10px;">新規登録</button>
-    <p id="userInfo"></p>
-    <button id="logoutBtn" style="display:none;margin:5px;padding:10px;">ログアウト</button>
-  </section>
-
-  <!-- 投稿フォーム（ログイン後のみ表示） -->
-  <section id="postSection" style="display:none;max-width:600px;margin:20px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-    <h2>記事を投稿する</h2>
-    <form id="postForm">
-      <input type="text" id="title" placeholder="タイトル" required
-        style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:4px;">
-      <textarea id="content" placeholder="本文" required
-        style="width:100%;padding:10px;height:120px;margin-bottom:10px;border:1px solid #ccc;border-radius:4px;"></textarea>
-      <button type="submit" style="padding:10px 20px;background:#008CBA;color:#fff;border:none;border-radius:4px;cursor:pointer;">
-        投稿
-      </button>
-    </form>
-  </section>
-
-  <!-- 投稿一覧 -->
-  <section id="postList" style="max-width:800px;margin:20px auto;padding:10px;">
-    <h2>投稿一覧</h2>
-    <div id="posts"></div>
-  </section>
-
   <footer>
     <p>© 2025 My Gallery Site</p>
   </footer>
-
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // Firebase設定
-    const firebaseConfig = {
-      apiKey: "AIzaSyA0ys9RVMq3cPqJ3jxJEnDwvKqQ961bZM4",
-      authDomain: "sweet-7b31a.firebaseapp.com",
-      projectId: "sweet-7b31a",
-      storageBucket: "sweet-7b31a.firebasestorage.app",
-      messagingSenderId: "80960762733",
-      appId: "1:80960762733:web:646203b4566931d711e064"
-    };
-
-    // 初期化
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // DOM要素
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userInfo = document.getElementById("userInfo");
-    const authSection = document.getElementById("authSection");
-    const postSection = document.getElementById("postSection");
-
-    // 新規登録
-    signupBtn.onclick = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        alert("登録成功！");
-      } catch (error) {
-        alert(error.message);
-      }
-    };
-
-    // ログイン
-    loginBtn.onclick = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("ログイン成功！");
-      } catch (error) {
-        alert(error.message);
-      }
-    };
-
-    // ログアウト
-    logoutBtn.onclick = async () => {
-      await signOut(auth);
-    };
-
-    // 認証状態の監視
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        userInfo.textContent = `こんにちは、${user.email}`;
-        logoutBtn.style.display = "inline-block";
-        postSection.style.display = "block";
-      } else {
-        userInfo.textContent = "";
-        logoutBtn.style.display = "none";
-        postSection.style.display = "none";
-      }
-      loadPosts();
-    });
-
-    // 投稿処理
-    const form = document.getElementById("postForm");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
-
-      try {
-        await addDoc(collection(db, "posts"), {
-          title,
-          content,
-          author: auth.currentUser.email,
-          authorUid: auth.currentUser.uid,
-          createdAt: new Date()
-        });
-        alert("投稿しました！");
-        form.reset();
-        loadPosts();
-      } catch (error) {
-        alert("投稿に失敗しました: " + error.message);
-      }
-    });
-
-    // 投稿一覧の読み込み（削除機能付き）
-    async function loadPosts() {
-      const postsDiv = document.getElementById("posts");
-      postsDiv.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "posts"));
-      querySnapshot.forEach((docSnap) => {
-        const post = docSnap.data();
-        const div = document.createElement("div");
-        div.style = "padding:10px;margin-bottom:10px;background:#f9f9f9;border-radius:4px;";
-        div.innerHTML = `
-          <h3>${post.title}</h3>
-          <p>${post.content}</p>
-          <small>投稿者: ${post.author || "匿名"}</small>
-        `;
-
-        // 🔑 自分の投稿のみ削除可能
-        if (auth.currentUser && post.authorUid === auth.currentUser.uid) {
-          const btn = document.createElement("button");
-          btn.textContent = "削除";
-          btn.style = "margin-top:10px;padding:5px 10px;background:#e63946;color:#fff;border:none;border-radius:4px;cursor:pointer;";
-          btn.onclick = async () => {
-            if (confirm("本当に削除しますか？")) {
-              await deleteDoc(doc(db, "posts", docSnap.id));
-              loadPosts();
-            }
-          };
-          div.appendChild(btn);
-        }
-
-        postsDiv.appendChild(div);
-      });
-    }
-  </script>
 </body>
 </html>
+
 
 
 
